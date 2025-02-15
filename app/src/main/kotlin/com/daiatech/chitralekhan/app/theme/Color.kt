@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2024 DAIA Tech Pvt Ltd. All rights reserved.
+ */
+
 package com.daiatech.chitralekhan.app.theme
 
 import androidx.compose.ui.graphics.Color

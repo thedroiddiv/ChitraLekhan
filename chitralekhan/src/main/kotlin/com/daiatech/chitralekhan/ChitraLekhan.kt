@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2024 DAIA Tech Pvt Ltd. All rights reserved.
+*/
+
 package com.daiatech.chitralekhan
 
 import androidx.compose.foundation.layout.Column
