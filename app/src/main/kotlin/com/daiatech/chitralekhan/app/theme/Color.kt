@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 DAIA Tech Pvt Ltd. All rights reserved.
+ * Copyright (c) 2025 DAIA Tech Pvt Ltd. All rights reserved.
  */
 
 package com.daiatech.chitralekhan.app.theme
