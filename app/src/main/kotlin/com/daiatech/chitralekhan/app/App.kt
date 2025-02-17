@@ -80,7 +80,9 @@ fun App() {
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
                         .background(MaterialTheme.colorScheme.surfaceContainer)
-                        .padding(8.dp)
+                        .padding(8.dp),
+                    brushSize = chitraLekhan.strokeWidth.value,
+                    onBrushSizeChange = chitraLekhan::setWidth
                 )
             } ?: run {
                 Row {

@@ -14,9 +14,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.daiatech.chitralekhan.models.DrawMode
 import com.daiatech.chitralekhan.utils.colors
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChitraLekhanToolbar(
     modifier: Modifier = Modifier,
@@ -40,7 +44,11 @@ fun ChitraLekhanToolbar(
     onDrawModeSelected: (DrawMode) -> Unit,
     onClear: () -> Unit,
     onUndo: () -> Unit,
-    onRedo: () -> Unit
+    onRedo: () -> Unit,
+    brushSize: Float,
+    onBrushSizeChange: (Float) -> Unit,
+    minBrushSize: Float = 2f,
+    maxBrushSize: Float = 32f
 ) {
     Column(modifier) {
         Row(
@@ -84,12 +92,29 @@ fun ChitraLekhanToolbar(
                 polygonSides = 5
             )
         }
+
         AnimatedVisibility(isColorPickerVisible) {
-            ColorPicker(
-                colors = colors,
-                pickedColor = pickedColor,
-                onColorPicked = onColorPicked,
-            )
+            Column {
+                Slider(
+                    value = brushSize.coerceIn(minBrushSize, maxBrushSize),
+                    onValueChange = onBrushSizeChange,
+                    valueRange = minBrushSize..maxBrushSize,
+                    thumb = {
+                        Box(
+                            Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .background(SliderDefaults.colors().thumbColor)
+                        )
+                    },
+                )
+                ColorPicker(
+                    colors = colors,
+                    pickedColor = pickedColor,
+                    onColorPicked = onColorPicked,
+                )
+            }
+
         }
     }
 }
@@ -112,7 +137,9 @@ private fun ChitraLekhanToolbarPreview() {
             onDrawModeSelected = {},
             onClear = {},
             onUndo = {},
-            onRedo = {}
+            onRedo = {},
+            brushSize = 12f,
+            onBrushSizeChange = {}
         )
     }
 
