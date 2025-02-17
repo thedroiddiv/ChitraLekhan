@@ -176,7 +176,7 @@ class ChitraLekhan(
 
     fun redo() {
         if (_redoList.isEmpty()) return
-        val removed = _undoList.removeAt(_undoList.lastIndex)
+        val removed = _redoList.removeAt(_redoList.lastIndex)
         _undoList.add(removed)
     }
 
