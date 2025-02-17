@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+apply {
+    from("publish-remote.gradle")
+}
+
 android {
     namespace = "com.daiatech.chitralekhan"
     compileSdk = 35
