@@ -33,7 +33,7 @@ import com.daiatech.chitralekhan.rememberChitraLekhan
 import com.daiatech.chitralekhan.utils.colors
 
 @Composable
-fun App(modifier: Modifier = Modifier) {
+fun App() {
     var imageBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
     val mediaPicker = rememberLauncherForActivityResult(
@@ -57,7 +57,9 @@ fun App(modifier: Modifier = Modifier) {
             imageBitmap?.let { bmp ->
                 val chitraLekhan = rememberChitraLekhan(
                     image = bmp,
-                    drawMode = DrawMode.FreeHand
+                    drawMode = DrawMode.FreeHand,
+                    color = colors.random(),
+                    width = 1f
                 )
                 var isColorPickerVisible by remember { mutableStateOf(false) }
                 ChitraLekhanCanvas(chitraLekhan = chitraLekhan, modifier = Modifier.weight(1f))

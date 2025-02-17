@@ -23,12 +23,6 @@ class ChitraLekhan(
     strokeWidth: Float,
     strokeAlpha: Float,
     drawMode: DrawMode,
-    val enableCircle: Boolean,
-    val enableRectangle: Boolean,
-    val enablePolygon: Boolean,
-    val enableDisabledDrawing: Boolean,
-    val polygonSides: Int,
-    val enableFreeHand: Boolean,
     val image: Bitmap
 ) {
     private val _undoList = mutableStateListOf<DrawingStroke>()
