@@ -20,13 +20,15 @@
 Kotlin: build.gradle.kts  
 ```kotlin  
 dependencies {  
- implementation("com.github.karya-inc:chitralekhan:<latest_release>")}  
+ implementation("com.github.karya-inc:chitralekhan:<latest_release>")
+}  
 ```  
   
 Groovy: build.gradle  
 ```kotlin  
 dependencies {  
- implementation 'com.github.karya-inc:chitralekhan:<latest_release>'}  
+ implementation 'com.github.karya-inc:chitralekhan:<latest_release>'
+}  
 ```  
   
 # Usage  
