@@ -57,12 +57,7 @@ fun ChitraLekhanCanvas(
         Image(
             bitmap = chitraLekhan.image.asImageBitmap(),
             modifier = Modifier
-                .onGloballyPositioned {
-                    chitraLekhan.updateOriginalDimensions(
-                        height = it.size.height.toFloat(),
-                        width = it.size.width.toFloat()
-                    )
-                }
+                .onGloballyPositioned { chitraLekhan.imageDisplaySize = it.size }
                 .graphicsLayer {
                     scaleX = scale
                     scaleY = scale

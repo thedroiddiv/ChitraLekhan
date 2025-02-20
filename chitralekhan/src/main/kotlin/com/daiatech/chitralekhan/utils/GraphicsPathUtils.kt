@@ -20,3 +20,16 @@ fun Path.drawQuadraticBezier(points: List<Offset>) {
         prevPoint = point
     }
 }
+
+
+fun android.graphics.Path.drawQuadraticBezier(points: List<Offset>) {
+    if (points.size <= 1) return
+    moveTo(points[0].x, points[0].y)
+    var prevPoint = points[1]
+    points.forEachIndexed { idx, point ->
+        if (idx == 0) return@forEachIndexed
+        val controlPoint = Offset((prevPoint.x + point.x) / 2, (prevPoint.y + point.y) / 2)
+        quadTo(controlPoint.x, controlPoint.y, point.x, point.y)
+        prevPoint = point
+    }
+}

@@ -5,6 +5,9 @@
 package com.daiatech.chitralekhan
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -12,11 +15,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntSize
 import com.daiatech.chitralekhan.models.DrawMode
 import com.daiatech.chitralekhan.models.DrawingStroke
 import com.daiatech.chitralekhan.utils.calculateDistance
 import com.daiatech.chitralekhan.utils.calculateMidPoint
+import com.daiatech.chitralekhan.utils.drawQuadraticBezier
 import com.daiatech.chitralekhan.utils.getVertices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ChitraLekhan(
     strokeColor: Color,
@@ -42,19 +49,9 @@ class ChitraLekhan(
 
     private val _redoList = mutableListOf<DrawingStroke>()
 
-    private val _originalHeight = mutableFloatStateOf(0f)
-    val originalHeight: State<Float> = _originalHeight
-
-    private val _originalWidth = mutableFloatStateOf(0f)
-    val originalWidth: State<Float> = _originalWidth
-
+    var imageDisplaySize: IntSize? = null
     val aspectRatio = image.width.toFloat() / image.height.toFloat()
     val isPortrait = image.width < image.height
-
-    fun updateOriginalDimensions(height: Float, width: Float) {
-        _originalWidth.floatValue = width
-        _originalHeight.floatValue = height
-    }
 
     fun startDrawing(offset: Offset) {
         val stroke = when (_drawMode.value) {
@@ -148,20 +145,6 @@ class ChitraLekhan(
         }
     }
 
-    fun getFreeHandOffset(): Pair<List<Pair<String, List<Offset>>>, Pair<Float, Float>> {
-        val freeHandOffset = mutableStateListOf<Pair<String, List<Offset>>>()
-        _undoList.forEach { drawingStroke ->
-            when (drawingStroke) {
-                is DrawingStroke.FreeHand -> {
-                    freeHandOffset.add(Pair(drawingStroke.color.toString(), drawingStroke.points))
-                }
-
-                else -> {}
-            }
-        }
-        return Pair(freeHandOffset, Pair(originalHeight.value, originalWidth.value))
-    }
-
     fun undo() {
         if (_undoList.isEmpty()) return
         val removed = _undoList.removeAt(_undoList.lastIndex)
@@ -194,4 +177,75 @@ class ChitraLekhan(
     fun setDrawMode(drawMode: DrawMode) {
         _drawMode.value = drawMode
     }
+
+    suspend fun getDrawingAsBitmap(): Bitmap = withContext(Dispatchers.Default) {
+        imageDisplaySize?.let { displaySize ->
+            // draw the strokes on a canvas of size [displaySize]
+            val originalSizeBmp = createBitmapFromStrokes(displaySize)
+            // then scale it down/up to match the bitmap size
+            Bitmap.createScaledBitmap(originalSizeBmp, image.width, image.height, true)
+        } ?: throw IllegalStateException("Please initialize the imageDisplaySize")
+    }
+
+    private suspend fun createBitmapFromStrokes(displaySize: IntSize): Bitmap =
+        withContext(Dispatchers.Default) {
+            val bitmap = Bitmap.createBitmap(
+                displaySize.width, displaySize.height, Bitmap.Config.ARGB_8888
+            )
+            val blankCanvas = Canvas(bitmap)
+            strokes.forEach { stroke ->
+                val paint = Paint().apply {
+                    setARGB(
+                        255,
+                        (stroke.color.red * 255).toInt(),
+                        (stroke.color.green * 255).toInt(),
+                        (stroke.color.blue * 255).toInt()
+                    )
+                    strokeWidth = stroke.width
+                    style = Paint.Style.STROKE
+                    strokeJoin = Paint.Join.ROUND
+                    strokeCap = Paint.Cap.ROUND
+                }
+                when (stroke) {
+                    is DrawingStroke.Circle -> {
+                        val path = Path().apply {
+                            // Add circle to path based on the properties of the Circle stroke
+                            addCircle(
+                                stroke.center.x,
+                                stroke.center.y,
+                                stroke.radius,
+                                Path.Direction.CW
+                            )
+                        }
+                        blankCanvas.drawPath(path, paint)
+                    }
+
+                    is DrawingStroke.FreeHand -> {
+                        val path = Path().apply { drawQuadraticBezier(stroke.points) }
+                        blankCanvas.drawPath(path, paint)
+                    }
+
+                    is DrawingStroke.Polygon -> {
+                        val path = Path().apply { drawQuadraticBezier(stroke.points) }
+                        blankCanvas.drawPath(path, paint)
+                    }
+
+                    is DrawingStroke.Rectangle -> {
+                        val path = Path().apply {
+                            addRect(
+                                stroke.topLeft.x,
+                                stroke.topLeft.y,
+                                stroke.bottomRight.x,
+                                stroke.bottomRight.y,
+                                Path.Direction.CW
+                            )
+                        }
+                        blankCanvas.drawPath(path, paint)
+                    }
+                }
+            }
+            bitmap
+        }
 }
+
+
