@@ -105,7 +105,14 @@ class ChitraLekhan(
             }
 
             is DrawingStroke.FreeHand -> {
-                lastStroke.points.add(offset)
+                val newPoints = lastStroke.points + offset
+                val newStroke = DrawingStroke.FreeHand(
+                    points = newPoints,
+                    width = lastStroke.width,
+                    color = lastStroke.color
+                )
+                _undoList.removeAt(_undoList.lastIndex)
+                _undoList.add(newStroke)
             }
 
             is DrawingStroke.Polygon -> {

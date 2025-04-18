@@ -1,6 +1,5 @@
 package com.daiatech.chitralekhan.models
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.daiatech.chitralekhan.utils.calculateDistance
 import com.daiatech.chitralekhan.utils.calculateMidPoint
 import com.daiatech.chitralekhan.utils.getTopLeftAndBottomRight
@@ -23,7 +22,7 @@ sealed class DrawingStroke(
      * @param width The width of the stroke.
      */
     class FreeHand(
-        val points: SnapshotStateList<Point>,
+        val points: List<Point>,
         color: Int,
         width: Float
     ) : DrawingStroke(color, width)
