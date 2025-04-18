@@ -6,8 +6,9 @@ package com.daiatech.chitralekhan.utils
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
+import com.daiatech.chitralekhan.models.Point
 
-fun Path.drawQuadraticBezier(points: List<Offset>) {
+fun Path.drawQuadraticBezier(points: List<Point>) {
     if (points.size <= 1) return // need atLeast two points to draw path
     moveTo(points[0].x, points[0].y) // move the cursor from (0,0) to x0, y0
     var prevPoint = points[1]
@@ -22,7 +23,7 @@ fun Path.drawQuadraticBezier(points: List<Offset>) {
 }
 
 
-fun android.graphics.Path.drawQuadraticBezier(points: List<Offset>) {
+fun android.graphics.Path.drawQuadraticBezier(points: List<Point>) {
     if (points.size <= 1) return
     moveTo(points[0].x, points[0].y)
     var prevPoint = points[1]

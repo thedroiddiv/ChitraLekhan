@@ -10,7 +10,6 @@ import com.daiatech.chitralekhan.models.DrawMode
 fun rememberChitraLekhan(
     color: Color,
     width: Float,
-    alpha: Float = 1f,
     drawMode: DrawMode = DrawMode.FreeHand,
     image: Bitmap
 ): ChitraLekhan {
@@ -18,7 +17,6 @@ fun rememberChitraLekhan(
         ChitraLekhan(
             strokeColor = color,
             strokeWidth = width,
-            strokeAlpha = alpha,
             drawMode = drawMode,
             image = image
         )

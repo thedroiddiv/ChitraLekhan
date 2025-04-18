@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.IntSize
 import com.daiatech.chitralekhan.models.DrawMode
 import com.daiatech.chitralekhan.models.DrawingStroke
@@ -24,11 +25,13 @@ import com.daiatech.chitralekhan.utils.drawQuadraticBezier
 import com.daiatech.chitralekhan.utils.getVertices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.core.graphics.scale
+import androidx.core.graphics.createBitmap
+import com.daiatech.chitralekhan.models.Point
 
 class ChitraLekhan(
     strokeColor: Color,
     strokeWidth: Float,
-    strokeAlpha: Float,
     drawMode: DrawMode,
     val image: Bitmap
 ) {
@@ -44,49 +47,42 @@ class ChitraLekhan(
     private val _strokeWidth = mutableFloatStateOf(strokeWidth)
     val strokeWidth: State<Float> = _strokeWidth
 
-    private val _strokeAlpha = mutableFloatStateOf(strokeAlpha)
-    val strokeAlpha: State<Float> = _strokeAlpha
-
     private val _redoList = mutableListOf<DrawingStroke>()
 
     var imageDisplaySize: IntSize? = null
     val aspectRatio = image.width.toFloat() / image.height.toFloat()
     val isPortrait = image.width < image.height
 
-    fun startDrawing(offset: Offset) {
+    fun startDrawing(offset: Point) {
         val stroke = when (_drawMode.value) {
             DrawMode.Circle -> DrawingStroke.Circle(
                 offset,
                 offset,
-                strokeColor.value,
+                strokeColor.value.toArgb(),
                 strokeWidth.value,
-                strokeAlpha.value
             )
 
             is DrawMode.Polygon -> {
                 val edges = getVertices(0f, offset, (_drawMode.value as DrawMode.Polygon).sides)
                 DrawingStroke.Polygon(
                     edges,
-                    strokeColor.value,
+                    strokeColor.value.toArgb(),
                     strokeWidth.value,
-                    strokeAlpha.value
                 )
             }
 
             is DrawMode.FreeHand -> DrawingStroke.FreeHand(
                 mutableStateListOf(offset),
-                strokeColor.value,
+                strokeColor.value.toArgb(),
                 strokeWidth.value,
-                strokeAlpha.value
             )
 
             is DrawMode.None -> null
             is DrawMode.Rectangle -> DrawingStroke.Rectangle(
                 offset,
                 offset,
-                strokeColor.value,
+                strokeColor.value.toArgb(),
                 strokeWidth.value,
-                strokeAlpha.value
             )
         }
         if (stroke != null) {
@@ -94,16 +90,15 @@ class ChitraLekhan(
         }
     }
 
-    fun updateDrawing(offset: Offset) {
+    fun updateDrawing(offset: Point) {
         if (_undoList.isEmpty()) return
         when (val lastStroke = _undoList.last()) {
             is DrawingStroke.Circle -> {
                 val newCircle = DrawingStroke.Circle(
                     lastStroke.poc1,
                     offset,
-                    strokeColor.value,
+                    strokeColor.value.toArgb(),
                     strokeWidth.value,
-                    strokeAlpha.value
                 )
                 _undoList.removeAt(_undoList.lastIndex)
                 _undoList.add(newCircle)
@@ -122,9 +117,8 @@ class ChitraLekhan(
                 val edges = getVertices(radius, center, sides)
                 val newPolygon = DrawingStroke.Polygon(
                     edges,
-                    strokeColor.value,
+                    strokeColor.value.toArgb(),
                     strokeWidth.value,
-                    strokeAlpha.value
                 )
                 _undoList.removeAt(_undoList.lastIndex)
                 _undoList.add(newPolygon)
@@ -135,9 +129,8 @@ class ChitraLekhan(
                     DrawingStroke.Rectangle(
                         lastStroke.d1,
                         lastStroke.d2,
-                        strokeColor.value,
+                        strokeColor.value.toArgb(),
                         strokeWidth.value,
-                        strokeAlpha.value
                     )
                 _undoList.removeAt(_undoList.lastIndex)
                 _undoList.add(newRectangle)
@@ -170,10 +163,6 @@ class ChitraLekhan(
         _strokeWidth.floatValue = width
     }
 
-    fun setAlpha(alpha: Float) {
-        _strokeAlpha.floatValue = alpha
-    }
-
     fun setDrawMode(drawMode: DrawMode) {
         _drawMode.value = drawMode
     }
@@ -183,24 +172,17 @@ class ChitraLekhan(
             // draw the strokes on a canvas of size [displaySize]
             val originalSizeBmp = createBitmapFromStrokes(displaySize)
             // then scale it down/up to match the bitmap size
-            Bitmap.createScaledBitmap(originalSizeBmp, image.width, image.height, true)
+            originalSizeBmp.scale(image.width, image.height)
         } ?: throw IllegalStateException("Please initialize the imageDisplaySize")
     }
 
     private suspend fun createBitmapFromStrokes(displaySize: IntSize): Bitmap =
         withContext(Dispatchers.Default) {
-            val bitmap = Bitmap.createBitmap(
-                displaySize.width, displaySize.height, Bitmap.Config.ARGB_8888
-            )
+            val bitmap = createBitmap(displaySize.width, displaySize.height)
             val blankCanvas = Canvas(bitmap)
             strokes.forEach { stroke ->
                 val paint = Paint().apply {
-                    setARGB(
-                        255,
-                        (stroke.color.red * 255).toInt(),
-                        (stroke.color.green * 255).toInt(),
-                        (stroke.color.blue * 255).toInt()
-                    )
+                    setColor(stroke.color)
                     strokeWidth = stroke.width
                     style = Paint.Style.STROKE
                     strokeJoin = Paint.Join.ROUND

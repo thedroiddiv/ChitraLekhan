@@ -1,5 +1,6 @@
 package com.daiatech.chitralekhan
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -23,7 +24,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.daiatech.chitralekhan.components.drawChitraLekhanStrokes
 import com.daiatech.chitralekhan.models.DrawMode
+import com.daiatech.chitralekhan.models.Point
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ChitraLekhanCanvas(
     chitraLekhan: ChitraLekhan,
@@ -83,10 +86,10 @@ fun ChitraLekhanCanvas(
                     .pointerInput(null) {
                         detectDragGestures(
                             onDragStart = {
-                                chitraLekhan.startDrawing(it)
+                                chitraLekhan.startDrawing(Point(it.x, it.y))
                             },
                             onDrag = { change, _ ->
-                                chitraLekhan.updateDrawing(change.position)
+                                chitraLekhan.updateDrawing(Point(change.position.x, change.position.y))
                             }
                         )
                     }

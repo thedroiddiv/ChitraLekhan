@@ -1,9 +1,6 @@
 package com.daiatech.chitralekhan.models
 
-
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import com.daiatech.chitralekhan.utils.calculateDistance
 import com.daiatech.chitralekhan.utils.calculateMidPoint
 import com.daiatech.chitralekhan.utils.getTopLeftAndBottomRight
@@ -13,12 +10,10 @@ import com.daiatech.chitralekhan.utils.getTopLeftAndBottomRight
  *
  * @property color The color of the stroke.
  * @property width The width of the stroke.
- * @property alpha The transparency of the stroke.
  */
 sealed class DrawingStroke(
-    val color: Color,
-    val width: Float,
-    val alpha: Float
+    val color: Int,
+    val width: Float
 ) {
     /**
      * Represents a freehand stroke composed of a list of points.
@@ -26,14 +21,12 @@ sealed class DrawingStroke(
      * @property points The list of points defining the stroke path.
      * @param color The color of the stroke.
      * @param width The width of the stroke.
-     * @param alpha The transparency of the stroke.
      */
     class FreeHand(
-        val points: SnapshotStateList<Offset>,
-        color: Color,
-        width: Float,
-        alpha: Float
-    ) : DrawingStroke(color, width, alpha)
+        val points: SnapshotStateList<Point>,
+        color: Int,
+        width: Float
+    ) : DrawingStroke(color, width)
 
     /**
      * Represents a polygonal stroke, defined by a mutable list of points.
@@ -42,14 +35,12 @@ sealed class DrawingStroke(
      * @property points The list of points defining the polygon.
      * @param color The color of the stroke (default: Green).
      * @param width The width of the stroke.
-     * @param alpha The transparency of the stroke.
      */
     open class Polygon(
-        val points: MutableList<Offset>,
-        color: Color = Color.Green,
-        width: Float,
-        alpha: Float
-    ) : DrawingStroke(color, width, alpha) {
+        val points: MutableList<Point>,
+        color: Int,
+        width: Float
+    ) : DrawingStroke(color, width) {
         init {
             // Add the first point again at the end to close the shape
             points.add(points[0])
@@ -67,15 +58,13 @@ sealed class DrawingStroke(
      * @property edgeLength The height of the rectangle.
      * @param color The color of the stroke (default: Green).
      * @param width The width of the stroke.
-     * @param alpha The transparency of the stroke.
      */
     class Rectangle(
-        val d1: Offset,
-        val d2: Offset,
-        color: Color = Color.Green,
-        width: Float,
-        alpha: Float
-    ) : DrawingStroke(color, width, alpha) {
+        val d1: Point,
+        val d2: Point,
+        color: Int,
+        width: Float
+    ) : DrawingStroke(color, width) {
         private val topLeftAndBottomRight = getTopLeftAndBottomRight(d1, d2)
         val topLeft get() = topLeftAndBottomRight.first
         val bottomRight get() = topLeftAndBottomRight.second
@@ -92,15 +81,13 @@ sealed class DrawingStroke(
      * @property center The center of the circle.
      * @param color The color of the stroke.
      * @param width The width of the stroke.
-     * @param alpha The transparency of the stroke.
      */
     class Circle(
-        val poc1: Offset,
-        val poc2: Offset,
-        color: Color,
-        width: Float,
-        alpha: Float
-    ) : DrawingStroke(color, width, alpha) {
+        val poc1: Point,
+        val poc2: Point,
+        color: Int,
+        width: Float
+    ) : DrawingStroke(color, width) {
         val radius get() = calculateDistance(poc1, poc2) / 2
         val center get() = calculateMidPoint(poc1, poc2)
     }

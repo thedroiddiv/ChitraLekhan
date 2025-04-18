@@ -1,6 +1,8 @@
 package com.daiatech.chitralekhan.components
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -15,8 +17,7 @@ fun DrawScope.drawChitraLekhanStrokes(strokes: List<DrawingStroke>) {
             is DrawingStroke.FreeHand -> {
                 drawPath(
                     Path().apply { drawQuadraticBezier(stroke.points) },
-                    color = stroke.color,
-                    alpha = stroke.alpha,
+                    color = Color(stroke.color),
                     style = Stroke(
                         width = stroke.width,
                         cap = StrokeCap.Round,
@@ -28,8 +29,7 @@ fun DrawScope.drawChitraLekhanStrokes(strokes: List<DrawingStroke>) {
             is DrawingStroke.Polygon -> {
                 drawPath(
                     Path().apply { drawQuadraticBezier(stroke.points) },
-                    color = stroke.color,
-                    alpha = stroke.alpha,
+                    color = Color(stroke.color),
                     style = Stroke(
                         width = stroke.width,
                         cap = StrokeCap.Round,
@@ -40,9 +40,9 @@ fun DrawScope.drawChitraLekhanStrokes(strokes: List<DrawingStroke>) {
 
             is DrawingStroke.Circle -> {
                 drawCircle(
-                    color = stroke.color,
+                    color = Color(stroke.color),
                     radius = stroke.radius,
-                    center = stroke.center,
+                    center = Offset(stroke.center.x, stroke.center.y),
                     style = Stroke(
                         width = stroke.width,
                         cap = StrokeCap.Round,
@@ -53,8 +53,8 @@ fun DrawScope.drawChitraLekhanStrokes(strokes: List<DrawingStroke>) {
 
             is DrawingStroke.Rectangle -> {
                 drawRect(
-                    color = stroke.color,
-                    topLeft = stroke.topLeft,
+                    color = Color(stroke.color),
+                    topLeft = Offset(stroke.topLeft.x, stroke.topLeft.y),
                     size = Size(stroke.edgeWidth, stroke.edgeLength),
                     style = Stroke(
                         width = stroke.width,
