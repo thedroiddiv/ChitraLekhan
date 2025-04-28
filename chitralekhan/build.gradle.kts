@@ -62,7 +62,7 @@ dependencies {
 
 // Publishing tasks
 val publishGroupId = "io.github.karya-inc"
-val publishArtifactVersion = "0.0.3"
+val publishArtifactVersion = "0.0.4"
 val publishArtifactId = "chitralekhan"
 
 group = publishGroupId
