@@ -1,6 +1,10 @@
 package com.daiatech.chitralekhan.utils
 
+import com.daiatech.chitralekhan.models.DrawingStroke
 import com.daiatech.chitralekhan.models.Point
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -102,4 +106,79 @@ fun getVertices(radius: Float, center: Point, sides: Int): MutableList<Point> {
         vertices.add(Point(x1, y1))
     }
     return vertices
+}
+
+/**
+ * Scales a list of [DrawingStroke]s from a given display size to an image size.
+ *
+ * This function adjusts all points inside each stroke based on the ratio between
+ * the original display dimensions and the actual image dimensions. It ensures that
+ * the strokes retain their relative positions and proportions when mapped onto
+ * the larger or smaller image.
+ *
+ * Supported stroke types:
+ * - [DrawingStroke.Circle]
+ * - [DrawingStroke.FreeHand]
+ * - [DrawingStroke.Polygon]
+ * - [DrawingStroke.Rectangle]
+ *
+ * @param strokes The list of [DrawingStroke]s drawn on the display size.
+ * @param imageWidth The width of the target image to which strokes should be scaled.
+ * @param imageHeight The height of the target image to which strokes should be scaled.
+ * @param displayWidth The width of the display on which the strokes were originally drawn.
+ * @param displayHeight The height of the display on which the strokes were originally drawn.
+ * @param dispatcher The [CoroutineDispatcher] on which the scaling operation should be performed.
+ *                   Defaults to [Dispatchers.Default].
+ *
+ * @return A new list of [DrawingStroke]s with all points scaled to match the target image size.
+ *
+ */
+suspend fun scaleStrokesToImageSize(
+    strokes: List<DrawingStroke>,
+    imageWidth: Int,
+    imageHeight: Int,
+    displayWidth: Int,
+    displayHeight: Int,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default
+): List<DrawingStroke> = withContext(dispatcher) {
+    val scaleX = (imageWidth.toFloat() / displayWidth)
+    val scaleY = (imageHeight.toFloat() / displayHeight)
+    return@withContext strokes.map { stroke ->
+        fun Point.getScaledPoint(): Point {
+            return Point(
+                x = this.x.times(scaleX),
+                y = this.y.times(scaleY)
+            )
+        }
+        when (stroke) {
+            is DrawingStroke.Circle -> {
+                DrawingStroke.Circle(
+                    poc1 = stroke.poc1.getScaledPoint(),
+                    poc2 = stroke.poc2.getScaledPoint(),
+                    color = stroke.color,
+                    width = stroke.width
+                )
+            }
+
+            is DrawingStroke.FreeHand -> {
+                val points = stroke.points.map { it.getScaledPoint() }
+                DrawingStroke.FreeHand(points, stroke.color, stroke.width)
+            }
+
+            is DrawingStroke.Polygon -> {
+                val points = stroke.points.map { it.getScaledPoint() }
+                    .toMutableList()
+                DrawingStroke.Polygon(points, stroke.color, stroke.width)
+            }
+
+            is DrawingStroke.Rectangle -> {
+                DrawingStroke.Rectangle(
+                    d1 = stroke.d1.getScaledPoint(),
+                    d2 = stroke.d2.getScaledPoint(),
+                    color = stroke.color,
+                    width = stroke.width
+                )
+            }
+        }
+    }
 }
