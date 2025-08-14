@@ -1,9 +1,3 @@
-<div align="center">
-  <img src='https://github.com/karya-inc/RawAudioRecorder/assets/69595691/1d70ff80-7639-4ab7-8fd4-3da69d95ca4e' width='256px' />
-</div>
-
-<h4 align="center">TODO: Create and add Logo</h4>
-
 <h1 align="center">Chitra Lekhan</h1>
 
 <p align="center">
@@ -11,7 +5,7 @@
   <img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-a503fc?logo=kotlin&logoColor=white&style=for-the-badge"/>
 </p>
 
-<p align="center"><b>An Android library for image annotation</b></p>
+<p align="center"><b>An Android library for image annotation built using Jetpack Compose and Canvas API</b></p>
 
 ## ✨ Features
 
