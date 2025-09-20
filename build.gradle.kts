@@ -9,7 +9,5 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.androidLint) apply false
     alias(libs.plugins.kotlinxSerialization) apply false
-    alias(libs.plugins.maven.publish) apply false
-    id("maven-publish")
 }
 

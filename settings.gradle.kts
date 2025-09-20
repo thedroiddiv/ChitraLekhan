@@ -1,5 +1,4 @@
-rootProject.name = "ChitraLekhan"
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+rootProject.name = "chitralekhan"
 
 pluginManagement {
     repositories {

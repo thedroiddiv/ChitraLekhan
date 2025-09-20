@@ -18,7 +18,6 @@ kotlinx-coroutines = "1.10.2"
 kotlinStdlib = "2.2.10"
 runner = "1.5.2"
 core = "1.5.0"
-mavenPublish = "0.30.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -47,4 +46,3 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 androidLint = { id = "com.android.lint", version.ref = "agp" }
-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
